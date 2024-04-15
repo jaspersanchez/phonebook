@@ -1,6 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const app = express()
+const Person = require('./models/people.js')
 
 morgan.token('request-body', (req, res) => JSON.stringify(req.body))
 
@@ -47,7 +49,7 @@ const getInfoPageHtml = (personCount, date) => {
 const generateId = () => Math.floor(Math.random() * 1000000000000)
 
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+  Person.find({}).then((people) => res.json(people))
 })
 
 app.get('/info', (req, res) => {
@@ -97,7 +99,7 @@ app.post('/api/persons', (req, res) => {
   return res.json(person)
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
