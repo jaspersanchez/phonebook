@@ -39,26 +39,26 @@ let persons = [
 
 const date = new Date()
 
-const getInfoPageHtml = (personCount, date) => {
+const getinfopagehtml = (personcount, date) => {
   return `
-    <p>Phonebook has info for ${personCount} people </p>
+    <p>phonebook has info for ${personcount} people </p>
     <p>${date}</p>
 `
 }
 
-const generateId = () => Math.floor(Math.random() * 1000000000000)
+const generateid = () => math.floor(math.random() * 1000000000000)
 
 app.get('/api/persons', (req, res) => {
   Person.find({}).then((people) => res.json(people))
 })
 
 app.get('/info', (req, res) => {
-  const page = getInfoPageHtml(persons.length, date)
+  const page = getinfopagehtml(persons.length, date)
   res.send(page)
 })
 
 app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
+  const id = number(req.params.id)
   const person = persons.find((p) => p.id === id)
   if (person) return res.json(person)
 
@@ -66,7 +66,7 @@ app.get('/api/persons/:id', (req, res) => {
 })
 
 app.delete('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
+  const id = number(req.params.id)
   persons = persons.filter((p) => p.id !== id)
 
   res.status(204).end()
@@ -74,29 +74,20 @@ app.delete('/api/persons/:id', (req, res) => {
 
 app.post('/api/persons', (req, res) => {
   const { name, number } = req.body
-  const id = generateId()
 
   if (!name || !number)
     return res.status(400).json({
       error: 'name or number missing',
     })
 
-  const personExist = persons.find((p) => p.name === name)
-
-  if (personExist)
-    return res.status(400).json({
-      error: 'name must be unique',
-    })
-
-  const person = {
-    id,
+  const person = new Person({
     name,
     number,
-  }
+  })
 
-  persons = persons.concat(person)
-
-  return res.json(person)
+  person.save().then((savedPerson) => {
+    res.json(savedPerson)
+  })
 })
 
 const PORT = process.env.PORT
