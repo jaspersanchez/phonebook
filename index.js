@@ -29,18 +29,23 @@ app.get('/api/persons', (req, res, next) => {
     .catch((error) => next(error))
 })
 
-app.get('/info', (req, res) => {
-  const page = getinfopagehtml(persons.length, date)
-  res.send(page)
+app.get('/info', (req, res, next) => {
+  Person.countDocuments({})
+    .then((count) => {
+      const page = getinfopagehtml(count, date)
+
+      res.send(page)
+    })
+    .catch((error) => next(error))
 })
 
-app.get('/api/persons/:id', (req, res) => {
-  console.log('find person', req.params.id)
-  const id = Number(req.params.id)
-  const person = persons.find((p) => p.id === id)
-  if (person) return res.json(person)
-
-  return res.status(404).end()
+app.get('/api/persons/:id', (req, res, next) => {
+  const id = req.params.id
+  Person.findById(id)
+    .then((person) => {
+      res.json(person)
+    })
+    .catch((error) => next(error))
 })
 
 app.put('/api/persons/:id', (req, res, next) => {
